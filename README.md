@@ -1,6 +1,10 @@
 # Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+create .env.developement and add in this snippit 
+PGDATABASE=nc_news;
+
+create a .env.test and add in this code snippit
+PGDATABASE=nc_news_test;
 
 
 
