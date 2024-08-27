@@ -1,2 +1,2 @@
-const app = require ('./app')
-app.listen(9090, () => {console.log('app listening on port 9090')})
+const app = require ("./app")
+app.listen(5432, () => {console.log("app listening on port 5432")})

@@ -1,11 +1,12 @@
-const topics = require('../../db/connection')
+    const db = require('../connection')
 
-exports.selectTopics = (req, res) => {
-    return ("SELECT * FROM topics").then(({rows}) => {
-        return rows
-    })
-    const queryArr = []
-}
+    const selectTopics = () => {
+        let queryString = "SELECT * FROM topics";
+        const queryArr = []
 
-module.exports = {getTopics}
+        return db.query(queryString).then((response) => {
+            return response.rows;
+          })
+     }
 
+module.exports = {selectTopics}

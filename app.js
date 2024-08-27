@@ -1,9 +1,14 @@
-const express = require('express');
-const {getTopics} = require('./db/controllers/topics.controllers')
+const express = require("express");
+
+const { getAllTopics } = require ('./db/controllers/topics.controllers')
+const { handleNotFoundError, handleServerErrors } = require('./errors');
 
 const app = express();
-app.use(express.json());
 
-app.get('api/topics')
+app.get('/api/topics', getAllTopics)
 
-module.export = app
+app.use(handleServerErrors);
+
+app.all('/*', handleNotFoundError)
+
+module.exports = app;
