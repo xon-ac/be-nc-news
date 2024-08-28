@@ -10,18 +10,14 @@ afterAll(() => db.end());
 
 
 describe('GET /api/topics', () => {
-  it('should respond with topics array', () => {
+  it('should respond with topics', () => {
     return request(app)
       .get('/api/topics')
-      .expect(200)
-      .then((response) => {console.log(response)})
-    expect(Array.isArray(response.body)).toBe(true)
-    expect(response.body.length).toBeGreaterThan(0)
-    response.body.forEach(topic => {
-      expect(topic).toHaveProperty('slug')
-      expect(topic).toHaveProperty('description')
+       .expect(200)
+          .then(({ body }) => {
+            expect(Array.isArray(body.topics)).toBe(true);
+          });
     })
-  })
   
     test("status:404, responds with an error message when passed a bad path", () => {
         return request(app)
