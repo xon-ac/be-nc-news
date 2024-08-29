@@ -33,6 +33,32 @@ describe('POST /api/articles/:article_id/comments', () => {
           });
     });
 
-    
+    describe('DELETE /api/comments/:comment_id', () => {
+        it('should delete the comment by comment_id and respond with status 204 and no content', () => {
+            return request(app)
+                .delete('/api/comments/1')
+                .expect(204)
+                .then(({ body }) => {
+                    expect(body).toEqual({});
+                });
+        });
+    })
 
+    it('should respond with status 404 if the comment_id does not exist', () => {
+        return request(app)
+            .delete('/api/comments/999999') // Non-existent comment_id
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Comment not found');
+            });
+    });
+
+    it('should respond with status 400 if the comment_id is invalid', () => {
+        return request(app)
+            .delete('/api/comments/not-a-valid-id') // Invalid comment_id
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Invalid comment ID');
+            });
+    });
 })
