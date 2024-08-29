@@ -45,10 +45,21 @@ const insertComment = (articleId, username, body) => {
       .then(({ rows }) => rows[0]);
   };
 
+const updateArticleVotes = (articleId, incVotes) => {
+    return db.query(`
+    UPDATE articles
+    SET votes = votes + $2
+    WHERE article_id = $1
+    RETURNING *;
+    `, [articleId, incVotes])
+    .then(result => result.rows[0]);
+};
+
 module.exports = {
     selectArticleById,
     selectAllArticles,
     selectCommentsByArticleId,
-    insertComment
+    insertComment,
+    updateArticleVotes
 
 };
