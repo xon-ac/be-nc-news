@@ -62,3 +62,80 @@ describe('GET /api/articles/:article_id', () => {
     });
 });
 
+describe('PATCH /api/articles/:article_id', () => {
+    it('should incriment the article votes and respond with the updated article', () => {
+        return request(app)
+            .get('/api/articles/1')
+            .then(({ body }) => {
+                const initialVotes = body.article.votes;
+                return request(app)
+                    .patch('/api/articles/1')
+                    .send({ inc_votes: 1 })
+                    .expect(200)
+                    .then(({ body }) => {
+                        expect(body.article).toHaveProperty('article_id', 1);
+                        expect(body.article.votes).toBe(initialVotes + 1);
+                    });
+            });
+    });
+
+    it('should decrement the article votes and respond with the updated article', () => {
+        return request(app)
+            .get('/api/articles/1')
+            .then(({ body }) => {
+                const initialVotes2 = body.article.votes;
+                return request(app)
+                .patch('/api/articles/1')
+                .send({ inc_votes: -1 })
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.article).toHaveProperty('article_id', 1);
+                expect(body.article.votes).toBe(initialVotes2 - 1)
+            });
+        })
+    });
+
+    it('should add multiple votes to the article and respond with the updated article', () => {
+        return request(app)
+            .get('/api/articles/1')
+            .then(({ body }) => {
+                const initialVotes = body.article.votes;
+                return request(app)
+                    .patch('/api/articles/1')
+                    .send({ inc_votes: 100 })
+                    .expect(200)
+                    .then(({ body }) => {
+                        expect(body.article).toHaveProperty('article_id', 1);
+                        expect(body.article.votes).toBe(initialVotes + 100);
+                    });
+            });
+    });
+
+    it('should deduct multiple votes to the article and respond with the updated article', () => {
+        return request(app)
+            .get('/api/articles/1')
+            .then(({ body }) => {
+                const initialVotes2 = body.article.votes;
+                return request(app)
+                .patch('/api/articles/1')
+                .send({ inc_votes: -1 })
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.article).toHaveProperty('article_id', 1);
+                expect(body.article.votes).toBe(initialVotes2 - 1)
+            });
+        })
+    });
+
+    it('should respond with a 404 error if the article ID does not exist', () => {
+        return request(app)
+            .patch('/api/articles/999999')
+            .send({ inc_votes: 1 })
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Article not found');
+            });
+    });
+
+
+});

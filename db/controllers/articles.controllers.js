@@ -1,4 +1,4 @@
-const { selectArticleById, insertComment, selectCommentsByArticleId } = require('../models/articles.models');
+const { selectArticleById, insertComment, selectCommentsByArticleId, updateArticleVotes } = require('../models/articles.models');
 
 const getArticleById = (req, res, next) => {
   const { article_id } = req.params;
@@ -41,9 +41,29 @@ const addCommentToArticle = (req, res, next) => {
         });
 };
 
+const patchArticleVotes = (req, res, next) => {
+    const { article_id } = req.params;
+    const { inc_votes } = req.body;
+
+    if (typeof inc_votes !== 'number') {
+        return res.status(400).send({ msg: 'Invalid input' });
+    }
+
+    updateArticleVotes(article_id, inc_votes)
+        .then(updatedArticle => {
+            if (updatedArticle) {
+                res.status(200).send({ article: updatedArticle });
+            } else {
+                res.status(404).send({ msg: 'Article not found' });
+            }
+        })
+        .catch(next);
+};
+
 module.exports = {
     getArticleById, 
     getArticleComments, 
     insertComment,
-    addCommentToArticle
+    addCommentToArticle,
+    patchArticleVotes
 }
