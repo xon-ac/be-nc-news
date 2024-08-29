@@ -1,5 +1,5 @@
-const app = require('../app')
 const request = require('supertest')
+const app = require('../app')
 const testData = require('../db/data/test-data')
 const db = require('../db/connection')
 const seed = require('../db/seeds/seed')
@@ -22,13 +22,14 @@ describe('GET /api/articles/:article_id', () => {
                 expect(body.article).toHaveProperty('votes', expect.any(Number))
             });
     });
+
     it('should respond with a 200 status code for valid article ID', () => {
         return request(app)
           .get('/api/articles/1')
           .expect(200);
       });
     
-    it('should respond with a 400 error when given an invalid article ID', () => {
+    it('should respond with a 404 error when given an invalid article ID', () => {
         return request(app)
           .get('/api/articles/999999')
           .expect(404)
@@ -36,4 +37,28 @@ describe('GET /api/articles/:article_id', () => {
             expect(body.msg).toBe('Article not found');
           });
       });
+    
+    it('should respond with the correct article object and comments sorted by most recent first', () => {
+        return request(app)
+            .get('/api/articles/1/comments')
+            .expect(200)
+            .then(({ body }) => {
+                expect(Array.isArray(body.comments)).toBe(true);
+                if (body.comments.length > 0) {
+                    body.comments.forEach(comment => {
+                        expect(comment).toHaveProperty('comment_id', expect.any(Number));
+                        expect(comment).toHaveProperty('author', expect.any(String));
+                        expect(comment).toHaveProperty('body', expect.any(String));
+                        expect(comment).toHaveProperty('created_at', expect.any(String));
+                        expect(comment).toHaveProperty('votes', expect.any(Number));
+                    });
+                    for (let i = 0; i < body.comments.length - 1; i++) {
+                        const currentDate = new Date(body.comments[i].created_at).getTime();
+                        const nextDate = new Date(body.comments[i + 1].created_at).getTime();
+                        expect(currentDate).toBeGreaterThanOrEqual(nextDate);
+                    }
+                }
+            });
+    });
 });
+
