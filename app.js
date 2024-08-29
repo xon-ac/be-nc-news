@@ -1,16 +1,22 @@
 const express = require("express");
 const { getApiEndpoints } = require ('./db/controllers/api.controllers')
 const { getAllTopics } = require ('./db/controllers/topics.controllers')
-const { getArticleById } = require ('./db/controllers/articles.controllers')
+const { getArticleById, getArticleComments, addCommentToArticle, patchArticleVotes} = require ('./db/controllers/articles.controllers')
 const { handleNotFoundError, handleServerErrors } = require('./errors');
+const { insertComment } = require("./db/models/articles.models");
 
 const app = express();
 
+app.use(express.json());
+
 app.get('/api', getApiEndpoints);
-
 app.get('/api/topics', getAllTopics)
-
 app.get('/api/articles/:article_id', getArticleById);
+app.get('/api/articles/:article_id/comments', getArticleComments)
+
+app.post('/api/articles/:article_id/comments', addCommentToArticle)
+
+app.patch('/api/articles/:article_id', patchArticleVotes);
 
 app.use(handleServerErrors);
 
