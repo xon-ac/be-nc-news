@@ -55,11 +55,41 @@ const updateArticleVotes = (articleId, incVotes) => {
     .then(result => result.rows[0]);
 };
 
+const fetchAllArticles = (sort_by = 'created_at', order = 'desc', topic) => {
+  const validSortColumns = ['created_at', 'title', 'author', 'votes', 'article_id'];
+  const validOrders = ['asc', 'desc'];
+
+  if (!validSortColumns.includes(sort_by)) {
+      return Promise.reject({ status: 400, msg: 'Invalid sort_by column' });
+  }
+
+  if (!validOrders.includes(order)) {
+      return Promise.reject({ status: 400, msg: 'Invalid order query' });
+  }
+
+  let queryStr = `
+      SELECT articles.*, COUNT(comments.comment_id) AS comment_count
+      FROM articles
+      LEFT JOIN comments ON articles.article_id = comments.article_id
+  `;
+
+  if (topic) {
+      queryStr += ` WHERE articles.topic = $1`;
+  }
+
+  queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`;
+
+  return db.query(queryStr, topic ? [topic] : []).then((result) => {
+      return result.rows;
+  });
+};
+
 module.exports = {
     selectArticleById,
     selectAllArticles,
     selectCommentsByArticleId,
     insertComment,
-    updateArticleVotes
+    updateArticleVotes,
+    fetchAllArticles 
 
 };

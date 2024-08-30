@@ -59,11 +59,23 @@ const patchArticleVotes = (req, res, next) => {
         })
         .catch(next);
 };
+const { fetchAllArticles } = require('../models/articles.models');
+
+const getArticles = (req, res, next) => {
+    const { sort_by, order } = req.query;
+
+    fetchAllArticles(sort_by, order)
+        .then((articles) => {
+            res.status(200).send({ articles });
+        })
+        .catch(next);
+};
 
 module.exports = {
     getArticleById, 
     getArticleComments, 
     insertComment,
     addCommentToArticle,
-    patchArticleVotes
+    patchArticleVotes,
+    getArticles
 }

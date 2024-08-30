@@ -136,6 +136,56 @@ describe('PATCH /api/articles/:article_id', () => {
                 expect(body.msg).toBe('Article not found');
             });
     });
+});
+describe('SORTED /api/articles', () => {
+    test('should respond with status 200 and an array of articles sorted by created_at by default', () => {
+        return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then(({ body }) => {
+                const { articles } = body;
+                expect(articles).toBeInstanceOf(Array);
+                expect(articles).toBeSortedBy('created_at', { descending: true });
+            });
+    });
 
+    test('should sort articles by any valid column when sort_by is provided', () => {
+        return request(app)
+            .get('/api/articles?sort_by=title')
+            .expect(200)
+            .then(({ body }) => {
+                const { articles } = body;
+                expect(articles).toBeInstanceOf(Array);
+                expect(articles).toBeSortedBy('title', { descending: true });
+            });
+    });
 
+    test('should sort articles in ascending order when order=asc is provided', () => {
+        return request(app)
+            .get('/api/articles?order=asc')
+            .expect(200)
+            .then(({ body }) => {
+                const { articles } = body;
+                expect(articles).toBeInstanceOf(Array);
+                expect(articles).toBeSortedBy('created_at', { descending: false });
+            });
+    });
+
+    test('should respond with status 400 if sort_by column is invalid', () => {
+        return request(app)
+            .get('/api/articles?sort_by=not_a_column')
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Invalid sort_by column');
+            });
+    });
+
+    test('should respond with status 400 if order query is invalid', () => {
+        return request(app)
+            .get('/api/articles?order=invalid_order')
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Invalid order query');
+            });
+    });
 });
