@@ -5,12 +5,13 @@ const { getArticleById, getArticleComments, addCommentToArticle, patchArticleVot
 const { deleteCommentById } = require ('./db/controllers/comments.controller')
 const { getAllUsers } = require('./db/controllers/users.controllers');
 const { getArticles } = require('./db/controllers/articles.controllers');
+const cors = require('cors')
 
 const { handleNotFoundError, handleServerErrors } = require('./errors')
 const { insertComment } = require("./db/models/articles.models")
 
 const app = express();
-
+app.use (cors())
 app.use(express.json());
 
 app.get('/api', getApiEndpoints);
